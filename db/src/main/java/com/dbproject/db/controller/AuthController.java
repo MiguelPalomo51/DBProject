@@ -3,6 +3,7 @@ package com.dbproject.db.controller;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,8 +24,14 @@ public class AuthController {
     }
 
     @PostMapping("/crear-usuario")
-    public String crearUsuario(@RequestParam String usuario, @RequestParam String password, @RequestParam boolean esAdmin) {
-        return authService.crearUsuario(usuario, password, esAdmin);
+    public ResponseEntity<Map<String, String>> crearUsuario(@RequestParam String usuario, @RequestParam String password, @RequestParam boolean esAdmin) {
+        String resultado = authService.crearUsuario(usuario, password, esAdmin);
+
+        Map<String, String> response = new HashMap<>();
+        response.put("mensaje", resultado);
+        response.put("estado", String.valueOf(true));
+
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/login")

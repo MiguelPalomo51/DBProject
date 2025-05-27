@@ -12,8 +12,8 @@ export class LoginComponent {
   usuario: string = '';
   password: string = '';
   mostrarRegistro = false;
-  usuarioRegistro = '';
-  passwordRegistro = '';
+  usuarioRegistro: string = '';
+  passwordRegistro: string = '';
 
   constructor(private http: HttpClient, private router: Router) {}
 
@@ -21,7 +21,6 @@ export class LoginComponent {
     const params = new HttpParams()
       .set('usuario', this.usuario)
       .set('password', this.password);
-
     this.http.post('http://localhost:9090/Aut/login', null, { params}).subscribe(
       (response: any) => {
         console.log(response);
@@ -48,9 +47,34 @@ export class LoginComponent {
   }
 
   registrarUsuario() {
-    // Aquí va la lógica para registrar el usuario
+    const body = {
+      usuario: this.usuarioRegistro,
+      password: this.passwordRegistro
+    };
     console.log('Usuario:', this.usuarioRegistro);
     console.log('Contraseña:', this.passwordRegistro);
+
+    const params = new HttpParams()
+      .set('usuario', this.usuarioRegistro)
+      .set('password', this.passwordRegistro)
+      .set ('esAdmin', 'false');
+
+    this.http.post('http://localhost:9090/Aut/crear-usuario', null, { params }).subscribe(
+      (response: any) => {
+        console.log('Respuesta del registro:', response);
+        if (response.mensaje) {
+          alert('¡Usuario registrado exitosamente!');
+          this.mostrarRegistro = false;
+          this.usuarioRegistro = '';
+          this.passwordRegistro = '';
+        } else {
+          alert('No se pudo registrar el usuario.');
+        }
+      },
+      error => {
+        alert('Ocurrió un error al registrar: ' + error.message);
+      }
+    );
     // Puedes agregar aquí la llamada a tu servicio de registro
     this.mostrarRegistro = false; // Oculta el formulario después de registrar
   }
