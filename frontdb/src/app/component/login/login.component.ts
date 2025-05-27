@@ -11,6 +11,7 @@ import { Router } from '@angular/router';
 export class LoginComponent {
   usuario: string = '';
   password: string = '';
+  mostrarRegistro = false;
 
   constructor(private http: HttpClient, private router: Router) {}
 
@@ -37,5 +38,9 @@ export class LoginComponent {
 
   menuprincipal(){
     this.router.navigate(['/menuprincipal']);
+  }
+
+  llamarForm() {
+    this.mostrarRegistro = true;
   }
 }
