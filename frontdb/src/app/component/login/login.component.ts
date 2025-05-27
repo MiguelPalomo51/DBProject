@@ -11,6 +11,9 @@ import { Router } from '@angular/router';
 export class LoginComponent {
   usuario: string = '';
   password: string = '';
+  mostrarRegistro = false;
+  usuarioRegistro = '';
+  passwordRegistro = '';
 
   constructor(private http: HttpClient, private router: Router) {}
 
@@ -37,5 +40,22 @@ export class LoginComponent {
 
   menuprincipal(){
     this.router.navigate(['/menuprincipal']);
+  }
+
+  llamarForm() {
+    this.mostrarRegistro = true;
+    console.log('si entro aca');
+  }
+
+  registrarUsuario() {
+    // Aquí va la lógica para registrar el usuario
+    console.log('Usuario:', this.usuarioRegistro);
+    console.log('Contraseña:', this.passwordRegistro);
+    // Puedes agregar aquí la llamada a tu servicio de registro
+    this.mostrarRegistro = false; // Oculta el formulario después de registrar
+  }
+
+  cancelarRegistro() {
+    this.mostrarRegistro = false;
   }
 }
