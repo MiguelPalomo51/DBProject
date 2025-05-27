@@ -23,7 +23,7 @@ export class LoginComponent {
       (response: any) => {
         console.log(response);
         if (response.estado) {
-          alert('Login exitoso!');
+          alert('Login succesfully!');
           this.menuprincipal();
         }else{
           alert('Login fallido!');

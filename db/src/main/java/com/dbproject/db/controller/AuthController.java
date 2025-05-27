@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.dbproject.db.service.AuthService;
 
-// el que vea esto es gay
 
 @CrossOrigin(origins = "http://localhost:4200")
 @RestController
