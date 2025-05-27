@@ -42,5 +42,6 @@ export class LoginComponent {
 
   llamarForm() {
     this.mostrarRegistro = true;
+    console.log('si entro aca');
   }
 }
