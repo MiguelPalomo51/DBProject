@@ -24,7 +24,11 @@
                     <button class="btn btn-success mb-4" style="width: 220px;" onclick="ejecutarConsulta()">Ejecutar</button>
                 </div>
                 <h3 class="mt-3">Resultado:</h3>
-                <pre id="resultado" class="bg-light p-3 border" style="width: 90%; min-height: 200px; font-size: 1.15rem;"></pre>
+                <div class="table-responsive" style="width: 90%; min-height: 200px;">
+                    <table id="resultado" class="table table-bordered table-striped mb-0" style="font-size: 1.15rem;">
+                        <!-- Aquí se llenarán dinámicamente los encabezados y filas según la consulta -->
+                    </table>
+                </div>
             </div>
         </div>
     </div>
