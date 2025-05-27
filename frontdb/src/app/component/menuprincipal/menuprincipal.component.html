@@ -18,12 +18,18 @@
                         <a href="#" class="d-block text-white py-2">Consultas SQL</a>
                     </nav>
                     <div class="col-md-8">
-                        <h2>Ejecutar Consulta SQL</h2>
-                        <textarea id="query" class="form-control" placeholder="Escribe tu consulta SQL aquí..."></textarea>
-                        <button class="btn btn-success mt-2" onclick="ejecutarConsulta()">Ejecutar</button>
-                        <h3 class="mt-3">Resultado:</h3>
-                        <pre id="resultado" class="bg-light p-3 border"></pre>
-                    </div>
+                  <h2>Ejecutar Consulta SQL</h2>
+
+   <label for="baseSelect" class="form-label">Selecciona una base de datos:</label>
+<select id="baseSelect" class="form-select mb-3" (change)="onBaseSeleccionada($event)">
+  <option value="">-- Selecciona una base --</option>
+  <option *ngFor="let bd of basesDeDatos" [value]="bd">{{ bd }}</option>
+</select>
+    <textarea id="query" class="form-control" placeholder="Escribe tu consulta SQL aquí..."></textarea>
+    <button class="btn btn-success mt-2" onclick="ejecutarConsulta()">Ejecutar</button>
+    <h3 class="mt-3">Resultado:</h3>
+    <pre id="resultado" class="bg-light p-3 border"></pre>
+</div>
                 </div>
             </div>
         </div>

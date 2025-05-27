@@ -1,5 +1,6 @@
 package com.dbproject.db.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -20,9 +21,20 @@ public class MySQLService {
 
     }
 
-    public List<Map<String, Object>> listarBasesDeDatos() {
-      return jdbcTemplate.queryForList("SHOW DATABASES");
+    public List<String> listarBasesDeDatos() {
+    List<Map<String, Object>> resultados = jdbcTemplate.queryForList("SHOW DATABASES");
+    List<String> bases = new ArrayList<>();
+    List<String> ignorar = List.of("information_schema", "mysql", "performance_schema", "sys");
+
+for (Map<String, Object> fila : resultados) {
+    String nombre = fila.get("Database").toString();
+    if (!ignorar.contains(nombre)) {
+        bases.add(nombre);
     }
+  }
+return bases;
+}
+
 
     public void crearBaseDatos(String nombreDB){
         String sql = "CREATE DATABASE " + nombreDB;

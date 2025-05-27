@@ -3,6 +3,7 @@ package com.dbproject.db.controller;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.dbproject.db.service.MySQLService;
 
+@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping("/mysql")
 
@@ -47,8 +49,8 @@ public class MySQLController {
     //}
 
     @GetMapping("/basededatos")
-    public List<Map<String, Object>> listarBasesDeDatos() {
-      return mySQLService.listarBasesDeDatos();
+    public List<String> listarBasesDeDatos() {
+    return mySQLService.listarBasesDeDatos();
 }
 
     @PostMapping("/creardb/{nombreDB}")
