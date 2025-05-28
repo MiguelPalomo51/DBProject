@@ -83,7 +83,22 @@ public ResponseEntity<?> ejecutarConsulta(@RequestBody Map<String, String> body)
         String base = body.get("base");
         String consulta = body.get("consulta");
 
+        // manejo de errores si no hay resultados
+        if (base == null || base.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No hay base de datos especificada.");
+        }
+
+        if (consulta == null || consulta.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No hay consulta SQL especificada.");
+        }
+
+
         List<Map<String, Object>> resultado = mySQLService.ejecutarConsulta(base, consulta);
+        
+        // manejo de errores si no hay resultados
+        if (resultado == null || resultado.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontraron resultados para la consulta.");
+        }
         return ResponseEntity.ok(resultado);
     } catch (Exception e) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());

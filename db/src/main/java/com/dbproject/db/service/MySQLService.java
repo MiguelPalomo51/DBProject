@@ -71,6 +71,9 @@
 
             if (consulta.trim().toLowerCase().startsWith("select")) {
                 return template.queryForList(consulta);
+            } else 
+            if (consulta.trim().toLowerCase().startsWith("show")) {
+                return template.queryForList(consulta);
             } else {
                 int affectedRows = template.update(consulta);
                 // Puedes retornar información sobre la operación si lo deseas
@@ -79,5 +82,7 @@
                 List<Map<String, Object>> response = new ArrayList<>();
                 response.add(result);
                 return response;
-            }   }
+            }   
+        }
+        
     }

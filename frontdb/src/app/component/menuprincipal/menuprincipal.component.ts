@@ -12,6 +12,8 @@ export class MenuprincipalComponent implements OnInit {
   baseSeleccionada: string = '';
   consultaSQL: string = '';
   resultadoConsulta: any[] = [];
+  mensajeError: string = '';
+  mensajeExito: string = '';
 
   constructor(private http: HttpClient) {}
 
@@ -43,15 +45,21 @@ export class MenuprincipalComponent implements OnInit {
     };
 
     this.http.post<any[]>('http://localhost:9090/mysql/ejecutar', payload)
-      .subscribe(
-        data => {
-          this.resultadoConsulta = data;
-          console.log('Resultado de la consulta:', this.resultadoConsulta);
-        },
-        error => {
-          console.error('Error al ejecutar la consulta:', error);
-        }
-      );
+    .subscribe(
+      data => {
+        this.resultadoConsulta = data;
+        this.mensajeExito = 'Consulta ejecutada correctamente.';
+        this.mensajeError = '';
+        setTimeout(() => this.mensajeExito = '', 3000); // Oculta el mensaje de éxito después de 6 segundos
+      },
+      error => {
+        console.error('Error al ejecutar la consulta:', error);
+        this.resultadoConsulta = [];
+        this.mensajeError = error.error ? error.error : 'Error desconocido al ejecutar la consulta.';
+        this.mensajeExito = '';
+      }
+    );
+
   }
 }
 

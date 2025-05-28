@@ -42,6 +42,12 @@
         </button>
       </div>
 
+      <div *ngIf="mensajeError" class="alert alert-danger" style="width: 90%;">
+        {{ mensajeError }}
+      </div>
+      <div *ngIf="mensajeExito" class="alert alert-success" style="width: 90%;">
+        {{ mensajeExito }}
+
       <h3 class="mt-3">Resultado:</h3>
 
       <div class="table-responsive" style="width: 90%; min-height: 200px">
