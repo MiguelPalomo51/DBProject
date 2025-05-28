@@ -49,14 +49,16 @@ export class MenuprincipalComponent implements OnInit {
       data => {
         this.resultadoConsulta = data;
         this.mensajeExito = 'Consulta ejecutada correctamente.';
+        
         this.mensajeError = '';
-        setTimeout(() => this.mensajeExito = '', 3000); // Oculta el mensaje de éxito después de 6 segundos
+        setTimeout(() => this.mensajeExito = '', 6000); // Oculta el mensaje de éxito después de 6 segundos
       },
       error => {
         console.error('Error al ejecutar la consulta:', error);
         this.resultadoConsulta = [];
         this.mensajeError = error.error ? error.error : 'Error desconocido al ejecutar la consulta.';
         this.mensajeExito = '';
+        setTimeout(() => this.mensajeError = '', 2000);
       }
     );
 

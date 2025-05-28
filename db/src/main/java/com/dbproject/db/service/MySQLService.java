@@ -78,7 +78,7 @@
                 int affectedRows = template.update(consulta);
                 // Puedes retornar información sobre la operación si lo deseas
                 // Por ejemplo, una lista con un solo mapa indicando filas afectadas:
-                Map<String, Object> result = Map.of("affectedRows", affectedRows);
+                Map<String, Object> result = Map.of("Lineas afectadas: ", affectedRows);
                 List<Map<String, Object>> response = new ArrayList<>();
                 response.add(result);
                 return response;

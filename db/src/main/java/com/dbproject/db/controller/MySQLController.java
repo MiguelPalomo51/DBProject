@@ -85,11 +85,11 @@ public ResponseEntity<?> ejecutarConsulta(@RequestBody Map<String, String> body)
 
         // manejo de errores si no hay resultados
         if (base == null || base.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No hay base de datos especificada.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error 2000: No hay base de datos especificada.");
         }
 
         if (consulta == null || consulta.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No hay consulta SQL especificada.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error 2001: No hay consulta SQL especificada.");
         }
 
 
@@ -97,7 +97,7 @@ public ResponseEntity<?> ejecutarConsulta(@RequestBody Map<String, String> body)
         
         // manejo de errores si no hay resultados
         if (resultado == null || resultado.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontraron resultados para la consulta.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error 2002: No se encontraron resultados para la consulta.");
         }
         return ResponseEntity.ok(resultado);
     } catch (Exception e) {
