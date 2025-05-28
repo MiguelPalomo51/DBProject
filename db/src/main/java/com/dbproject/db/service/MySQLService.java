@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.sql.DataSource;
+
+import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
@@ -11,49 +14,60 @@ import org.springframework.stereotype.Service;
 public class MySQLService {
     private final JdbcTemplate jdbcTemplate;
 
-    public  MySQLService(JdbcTemplate jdbcTemplate){
+    public MySQLService(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public List<Map<String, Object>>
-    ejecutarConsulta(String sql){
+    public List<Map<String, Object>> ejecutarConsulta(String sql) {
         return jdbcTemplate.queryForList(sql);
 
     }
 
     public List<String> listarBasesDeDatos() {
-    List<Map<String, Object>> resultados = jdbcTemplate.queryForList("SHOW DATABASES");
-    List<String> bases = new ArrayList<>();
-    List<String> ignorar = List.of("information_schema", "mysql", "performance_schema", "sys");
+        List<Map<String, Object>> resultados = jdbcTemplate.queryForList("SHOW DATABASES");
+        List<String> bases = new ArrayList<>();
+        List<String> ignorar = List.of("information_schema", "mysql", "performance_schema", "sys");
 
-for (Map<String, Object> fila : resultados) {
-    String nombre = fila.get("Database").toString();
-    if (!ignorar.contains(nombre)) {
-        bases.add(nombre);
+        for (Map<String, Object> fila : resultados) {
+            String nombre = fila.get("Database").toString();
+            if (!ignorar.contains(nombre)) {
+                bases.add(nombre);
+            }
+        }
+        return bases;
     }
-  }
-return bases;
-}
 
-
-    public void crearBaseDatos(String nombreDB){
+    public void crearBaseDatos(String nombreDB) {
         String sql = "CREATE DATABASE " + nombreDB;
         jdbcTemplate.execute(sql);
-    } 
+    }
 
-    public void eliminarBaseDatos(String nombreDB){
+    public void eliminarBaseDatos(String nombreDB) {
         String sql = "DROP DATABASE " + nombreDB;
         jdbcTemplate.execute(sql);
     }
 
-    public void crearUsuario(String usuario, String password){
+    public void crearUsuario(String usuario, String password) {
         String sql = "CREATE USER '" + usuario + "'@'%' IDENTIFIED BY '" + password + "'";
         jdbcTemplate.execute(sql);
     }
-    
 
-    public void otorgarPermisos(String usuario, String database){
+    public void otorgarPermisos(String usuario, String database) {
         String sql = "GRANT ALL PRIVILEGES ON " + database + ".* TO '" + usuario + "'@'%'";
-        jdbcTemplate.execute(sql); 
+        jdbcTemplate.execute(sql);
+    }
+
+    public List<Map<String, Object>> ejecutarConsulta(String base, String consulta) {
+        String url = "jdbc:mysql://localhost:3306/" + base + "?serverTimezone=UTC";
+        DataSource dataSource = DataSourceBuilder.create()
+                .url(url)
+                .username("root")
+                .password("Admin$2025")
+                .driverClassName("com.mysql.cj.jdbc.Driver")
+                .build();
+
+        JdbcTemplate template = new JdbcTemplate(dataSource);
+
+        return template.queryForList(consulta);
     }
 }

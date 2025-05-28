@@ -10,18 +10,19 @@ import { HttpClient } from '@angular/common/http';
 export class MenuprincipalComponent implements OnInit {
   basesDeDatos: string[] = [];
   baseSeleccionada: string = '';
+  consultaSQL: string = '';
+  resultadoConsulta: any[] = [];
 
-constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {}
 
   ngOnInit(): void {
     this.cargarBasesDeDatos();
   }
 
   cargarBasesDeDatos(): void {
-    this.http.get<any[]>('http://localhost:9090/mysql/basededatos')
+    this.http.get<string[]>('http://localhost:9090/mysql/basededatos')
       .subscribe(
         data => {
-          // Si la respuesta viene como [{Database: 'nombre'}]
           this.basesDeDatos = data;
         },
         error => {
@@ -31,10 +32,27 @@ constructor(private http: HttpClient) {}
   }
 
   onBaseSeleccionada(event: any): void {
-  this.baseSeleccionada = event.target.value;
-  console.log('Base seleccionada:', this.baseSeleccionada);
-}
+    this.baseSeleccionada = event.target.value;
+    console.log('Base seleccionada:', this.baseSeleccionada);
+  }
 
+  ejecutarConsulta(): void {
+    const payload = {
+      base: this.baseSeleccionada,
+      consulta: this.consultaSQL
+    };
+
+    this.http.post<any[]>('http://localhost:9090/mysql/ejecutar', payload)
+      .subscribe(
+        data => {
+          this.resultadoConsulta = data;
+          console.log('Resultado de la consulta:', this.resultadoConsulta);
+        },
+        error => {
+          console.error('Error al ejecutar la consulta:', error);
+        }
+      );
+  }
 }
 
 @Injectable({ providedIn: 'root' })
