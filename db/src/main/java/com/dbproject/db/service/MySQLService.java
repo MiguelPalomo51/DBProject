@@ -63,6 +63,7 @@ public class MySQLService {
                 .url(url)
                 .username("root")
                 .password("Admin$2025")
+                //.password("Admin$2025")
                 .driverClassName("com.mysql.cj.jdbc.Driver")
                 .build();
 
