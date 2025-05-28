@@ -14,6 +14,7 @@ export class MenuprincipalComponent implements OnInit {
   resultadoConsulta: any[] = [];
   mensajeError: string = '';
   mensajeExito: string = '';
+  
 
   mostrarPermisos = false;
   usuarios: string[] = [];
@@ -24,6 +25,10 @@ export class MenuprincipalComponent implements OnInit {
   permisoSeleccionado: string = '';
   permisosUsuario: any[] = [];
   mensajePermisos: string = '';
+
+  mostrarListarPermisos = false;
+  usuarioListarSeleccionado: string = '';
+  permisosListados: string[] = [];
 
   constructor(private http: HttpClient) {}
 
@@ -96,12 +101,26 @@ export class MenuprincipalComponent implements OnInit {
   }
 
   consultarPermisos() {
-    if (!this.usuarioSeleccionado || !this.baseSeleccionada) return;
+    // Limpia el mensaje antes de cualquier acción
+    this.mensajePermisos = '';
+
+    // Solo consulta si ambos están seleccionados
+    if (!this.usuarioSeleccionado || !this.baseSeleccionada) {
+      this.permisosUsuario = [];
+      return;
+    }
+
     this.http.get<any[]>(
       `http://localhost:9090/mysql/permisos?usuario=${this.usuarioSeleccionado}&base=${this.baseSeleccionada}`
     ).subscribe({
-      next: data => this.permisosUsuario = data,
-      error: () => this.mensajePermisos = 'No se pudieron obtener los permisos.'
+      next: data => {
+        this.permisosUsuario = data;
+        this.mensajePermisos = '';
+      },
+      error: () => {
+        this.permisosUsuario = [];
+        this.mensajePermisos = 'No se pudieron obtener los permisos.';
+      }
     });
   }
 
@@ -109,6 +128,28 @@ export class MenuprincipalComponent implements OnInit {
     // Aquí deberías implementar el endpoint para otorgar permisos en tu backend
     this.mensajePermisos = `Permiso "${this.permisoSeleccionado}" otorgado a "${this.usuarioSeleccionado}" (simulado)`;
     // Llama a tu backend real aquí si lo tienes implementado
+  }
+
+  abrirListarPermisos() {
+    this.mostrarListarPermisos = true;
+    this.usuarioListarSeleccionado = '';
+    this.permisosListados = [];
+    // Si no tienes usuarios cargados, llama aquí a tu método para obtenerlos
+  }
+
+  cerrarListarPermisos() {
+    this.mostrarListarPermisos = false;
+  }
+
+  listarPermisosUsuario() {
+    this.permisosListados = [];
+    if (!this.usuarioListarSeleccionado) return;
+    // Si tu backend requiere baseDeDatos, puedes poner "*" o pedir otro combo
+    this.http.get<string[]>(`http://localhost:9090/mysql/permisos?usuario=${this.usuarioListarSeleccionado}&base=*`)
+      .subscribe({
+        next: data => this.permisosListados = data,
+        error: () => this.permisosListados = []
+      });
   }
 }
 
