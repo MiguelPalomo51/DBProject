@@ -64,9 +64,9 @@ public class AuthController {
     }
 
     @GetMapping("/permisos")
-    public ResponseEntity<?> listarPermisos(@RequestParam String usuario) {
+    public ResponseEntity<?> listarPermisos(@RequestParam String usuario, @RequestParam String base) {
         try {
-            return ResponseEntity.ok(mySQLService.listarPermisos(usuario));
+            return ResponseEntity.ok(mySQLService.listarPermisos(usuario, base));
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Error al obtener permisos: " + e.getMessage());
         }

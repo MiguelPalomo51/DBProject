@@ -1,4 +1,4 @@
-    package com.dbproject.db.service;
+package com.dbproject.db.service;
 
     import java.util.ArrayList;
     import java.util.List;
@@ -92,9 +92,20 @@
         }
 
         // RV quiero agregar un listador de permisos
-        public List<Map<String, Object>> listarPermisos(String usuario) {
+        public List<String> listarPermisos(String usuario, String baseDeDatos) {
             String sql = "SHOW GRANTS FOR '" + usuario + "'@'%'";
-            return jdbcTemplate.queryForList(sql);
+            List<Map<String, Object>> grants = jdbcTemplate.queryForList(sql);
+            List<String> permisos = new ArrayList<>();
+
+            for (Map<String, Object> grant : grants) {
+                for (Object valor : grant.values()) {
+                    String permiso = valor.toString();
+                    if (permiso.contains(baseDeDatos + ".*") || permiso.contains("*.*")) {
+                        permisos.add(permiso);
+                    }
+                }
+            }
+            return permisos;
         }
         
 

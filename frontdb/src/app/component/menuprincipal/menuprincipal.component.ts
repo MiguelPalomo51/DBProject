@@ -15,6 +15,16 @@ export class MenuprincipalComponent implements OnInit {
   mensajeError: string = '';
   mensajeExito: string = '';
 
+  mostrarPermisos = false;
+  usuarios: string[] = [];
+  usuarioSeleccionado: string = '';
+  permisos: string[] = [
+    'SELECT', 'INSERT', 'UPDATE', 'DELETE', 'ALL PRIVILEGES'
+  ];
+  permisoSeleccionado: string = '';
+  permisosUsuario: any[] = [];
+  mensajePermisos: string = '';
+
   constructor(private http: HttpClient) {}
 
   ngOnInit(): void {
@@ -62,6 +72,43 @@ export class MenuprincipalComponent implements OnInit {
       }
     );
 
+  }
+
+  // Llama esto en ngOnInit o cuando abras la card de permisos
+  cargarUsuarios() {
+    this.http.get<string[]>('http://localhost:9090/Aut/usuarios').subscribe({
+      next: data => this.usuarios = data,
+      error: () => this.usuarios = []
+    });
+  }
+
+  abrirPermisos() {
+    this.mostrarPermisos = true;
+    this.cargarUsuarios();
+    this.usuarioSeleccionado = '';
+    this.permisoSeleccionado = '';
+    this.permisosUsuario = [];
+    this.mensajePermisos = '';
+  }
+
+  cerrarPermisos() {
+    this.mostrarPermisos = false;
+  }
+
+  consultarPermisos() {
+    if (!this.usuarioSeleccionado || !this.baseSeleccionada) return;
+    this.http.get<any[]>(
+      `http://localhost:9090/mysql/permisos?usuario=${this.usuarioSeleccionado}&base=${this.baseSeleccionada}`
+    ).subscribe({
+      next: data => this.permisosUsuario = data,
+      error: () => this.mensajePermisos = 'No se pudieron obtener los permisos.'
+    });
+  }
+
+  otorgarPermiso() {
+    // Aquí deberías implementar el endpoint para otorgar permisos en tu backend
+    this.mensajePermisos = `Permiso "${this.permisoSeleccionado}" otorgado a "${this.usuarioSeleccionado}" (simulado)`;
+    // Llama a tu backend real aquí si lo tienes implementado
   }
 }
 

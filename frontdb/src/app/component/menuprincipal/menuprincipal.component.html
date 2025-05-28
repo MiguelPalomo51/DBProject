@@ -2,12 +2,53 @@
   <div class="row g-0" style="min-height: 100vh">
     <!-- Menú lateral -->
     <nav
-      class="col-md-3 bg-dark text-white p-3 rounded-0 d-flex flex-column justify-content-start"
+      class="col-md-3 bg-dark text-white p-3 rounded-0 d-flex flex-column justify-content-start position-relative"
       style="min-height: 100vh"
     >
       <h2 class="text-center">Admin DB</h2>
       <a href="#" class="d-block text-white py-2">Salir</a>
-      <a href="#" class="d-block text-white py-2">Permisos</a>
+      <button type="button" class="d-block text-white py-2 btn btn-link" style="text-align:left;" (click)="abrirPermisos()">Permisos</button>
+
+      <!-- Card de permisos dentro del menú lateral -->
+      <div
+        class="card card-permisos p-3 shadow"
+        *ngIf="mostrarPermisos"
+        style="border-radius: 15px; border: none;"
+      >
+        <h5 class="mb-3 text-center">Gestión de Permisos</h5>
+        <div class="mb-3">
+          <label class="form-label">Usuario</label>
+          <select class="form-select" [(ngModel)]="usuarioSeleccionado" (change)="consultarPermisos()">
+            <option value="">-- Selecciona un usuario --</option>
+            <option *ngFor="let user of usuarios" [value]="user">{{ user }}</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Base de datos</label>
+          <select class="form-select" [(ngModel)]="baseSeleccionada" (change)="consultarPermisos()">
+            <option value="">-- Selecciona una base --</option>
+            <option *ngFor="let bd of basesDeDatos" [value]="bd">{{ bd }}</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Permiso</label>
+          <select class="form-select" [(ngModel)]="permisoSeleccionado" [disabled]="!usuarioSeleccionado || !baseSeleccionada">
+            <option value="">-- Selecciona un permiso --</option>
+            <option *ngFor="let permiso of permisos" [value]="permiso">{{ permiso }}</option>
+          </select>
+        </div>
+        <div class="mb-3 d-flex justify-content-between">
+          <button class="btn btn-success btn-sm" (click)="otorgarPermiso()" [disabled]="!usuarioSeleccionado || !permisoSeleccionado || !baseSeleccionada">Otorgar</button>
+          <button class="btn btn-secondary btn-sm" (click)="cerrarPermisos()">Cerrar</button>
+        </div>
+        <div *ngIf="mensajePermisos" class="alert alert-info py-1 px-2">{{ mensajePermisos }}</div>
+        <div *ngIf="permisosUsuario.length > 0">
+          <h6 class="mt-2 mb-1">Permisos actuales:</h6>
+          <ul class="mb-0 ps-3">
+            <li *ngFor="let p of permisosUsuario">{{ p }}</li>
+          </ul>
+        </div>
+      </div>
     </nav>
 
     <!-- Contenido principal sobre fondo semi-transparente -->
@@ -21,7 +62,7 @@
         <label for="baseSelect" class="form-label">Selecciona una base de datos:</label>
         <select id="baseSelect" class="form-select mb-3" (change)="onBaseSeleccionada($event)">
           <option value="">-- Selecciona una base --</option>
-          <option *ngFor="let bd of basesDeDatos" [value]="bd"> {{ bd }} </option>
+          <option *ngFor="let bd of basesDeDatos" [value]="bd">{{ bd }}</option>
         </select>
 
         <textarea
@@ -89,5 +130,10 @@
     box-shadow: 0 0 30px 0 rgba(0,0,0,0.10);
     max-width: 900px;
     margin: 40px auto;
+  }
+  .card-permisos {
+    background: rgba(255,255,255,0.85) !important;
+    box-shadow: 0 0 16px 0 rgba(0,0,0,0.10);
+    margin-top: 20px;
   }
 </style>
