@@ -84,5 +84,18 @@
                 return response;
             }   
         }
+
+        // RV quiero agregar un listador de usuarios
+        public List<String> listarUsuarios() {
+            String sql = "SELECT user FROM mysql.user";
+            return jdbcTemplate.queryForList(sql, String.class);
+        }
+
+        // RV quiero agregar un listador de permisos
+        public List<Map<String, Object>> listarPermisos(String usuario) {
+            String sql = "SHOW GRANTS FOR '" + usuario + "'@'%'";
+            return jdbcTemplate.queryForList(sql);
+        }
         
+
     }

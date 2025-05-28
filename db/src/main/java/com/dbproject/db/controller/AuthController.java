@@ -5,11 +5,13 @@ import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.dbproject.db.service.AuthService;
+import com.dbproject.db.service.MySQLService;
 
 // comentario para pull simultaneos
 
@@ -18,9 +20,11 @@ import com.dbproject.db.service.AuthService;
 @RequestMapping("/Aut")
 public class AuthController {
     private final AuthService authService;
+    private final MySQLService mySQLService; 
 
-    public AuthController(AuthService authService) {
+    public AuthController(AuthService authService, MySQLService mySQLService) {
         this.authService = authService;
+        this.mySQLService = mySQLService; 
     }
 
     @PostMapping("/crear-usuario")
@@ -48,5 +52,23 @@ public class AuthController {
         }
 
         return response; // Spring lo convertirá automáticamente a JSON
+    }
+
+    @GetMapping("/usuarios")
+    public ResponseEntity<?> listarUsuarios() {
+        try {
+            return ResponseEntity.ok(mySQLService.listarUsuarios());
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error al obtener usuarios: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/permisos")
+    public ResponseEntity<?> listarPermisos(@RequestParam String usuario) {
+        try {
+            return ResponseEntity.ok(mySQLService.listarPermisos(usuario));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error al obtener permisos: " + e.getMessage());
+        }
     }
 }

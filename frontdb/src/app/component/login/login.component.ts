@@ -1,4 +1,4 @@
-import { Component, Injectable } from '@angular/core';
+import { Component } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Router } from '@angular/router';
 
@@ -9,64 +9,85 @@ import { Router } from '@angular/router';
   styleUrl: './login.component.css'
 })
 export class LoginComponent {
-  usuario: string = '';
+  // Para cards de usuarios
+  usuarios: string[] = [];
+  mostrarPasswordForm = false;
+  usuarioSeleccionado: string | null = null;
   password: string = '';
+  mensajeError: string = '';
+  mostrarConnections = false;
+
+  // Para registro
   mostrarRegistro = false;
   usuarioRegistro: string = '';
   passwordRegistro: string = '';
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient, private router: Router) {
+    this.cargarUsuarios();
+  }
 
-  login() {
+  // Cargar usuarios desde el backend
+  cargarUsuarios() {
+    this.http.get<string[]>('http://localhost:9090/Aut/usuarios').subscribe({
+      next: (data) => this.usuarios = data,
+      error: () => this.mensajeError = 'No se pudieron cargar los usuarios'
+    });
+  }
+
+  // Seleccionar usuario y mostrar form de contraseña
+  seleccionarUsuario(usuario: string) {
+    this.usuarioSeleccionado = usuario;
+    this.mostrarPasswordForm = true;
+    this.password = '';
+    this.mensajeError = '';
+  }
+
+  // Cancelar form de contraseña
+  cancelarPasswordForm() {
+    this.mostrarPasswordForm = false;
+    this.usuarioSeleccionado = null;
+    this.password = '';
+  }
+
+  // Login solo con usuario seleccionado y contraseña
+  loginConPassword() {
     const params = new HttpParams()
-      .set('usuario', this.usuario)
+      .set('usuario', this.usuarioSeleccionado!)
       .set('password', this.password);
-    this.http.post('http://localhost:9090/Aut/login', null, { params}).subscribe(
+
+    this.http.post('http://localhost:9090/Aut/login', null, { params }).subscribe(
       (response: any) => {
-        console.log(response);
         if (response.estado) {
-          alert('Login succesfully!');
-          this.menuprincipal();
-        }else{
-          alert('Login fallido!');
+          this.router.navigate(['/menuprincipal']);
+        } else {
+          this.mensajeError = response.mensaje;
         }
       },
       error => {
-        alert('Ocurrió un error: ' + error.message);
+        this.mensajeError = 'Ocurrió un error: ' + error.message;
       }
     );
   }
 
-  menuprincipal(){
-    this.router.navigate(['/menuprincipal']);
-  }
-
+  // Métodos de registro (igual que ya tienes)
   llamarForm() {
     this.mostrarRegistro = true;
-    console.log('si entro aca');
   }
 
   registrarUsuario() {
-    const body = {
-      usuario: this.usuarioRegistro,
-      password: this.passwordRegistro
-    };
-    console.log('Usuario:', this.usuarioRegistro);
-    console.log('Contraseña:', this.passwordRegistro);
-
     const params = new HttpParams()
       .set('usuario', this.usuarioRegistro)
       .set('password', this.passwordRegistro)
-      .set ('esAdmin', 'false');
+      .set('esAdmin', 'false');
 
     this.http.post('http://localhost:9090/Aut/crear-usuario', null, { params }).subscribe(
       (response: any) => {
-        console.log('Respuesta del registro:', response);
         if (response.mensaje) {
           alert('¡Usuario registrado exitosamente!');
           this.mostrarRegistro = false;
           this.usuarioRegistro = '';
           this.passwordRegistro = '';
+          this.cargarUsuarios(); // Recarga la lista de usuarios
         } else {
           alert('No se pudo registrar el usuario.');
         }
@@ -75,12 +96,9 @@ export class LoginComponent {
         alert('Ocurrió un error al registrar: ' + error.message);
       }
     );
-    // Puedes agregar aquí la llamada a tu servicio de registro
-    this.mostrarRegistro = false; // Oculta el formulario después de registrar
   }
 
   cancelarRegistro() {
     this.mostrarRegistro = false;
   }
-
 }

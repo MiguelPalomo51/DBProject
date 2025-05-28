@@ -1,18 +1,38 @@
 <div class="d-flex justify-content-center align-items-center vh-100 bg-light">
-  <div class="card p-4 shadow-lg" style="width: 350px;" *ngIf="!mostrarRegistro">
-    <h3 class="text-center mb-4">Acceso al sistema</h3>
-    <form (ngSubmit)="login()" #loginForm="ngForm">
+  <!-- Pantalla de bienvenida centrada y con fondo semi-transparente -->
+  <div 
+    class="welcome-overlay"
+    *ngIf="!mostrarConnections && !mostrarRegistro && !mostrarPasswordForm"
+  >
+    <h1 class="fw-bold">Welcome to GroUp3 Workbench</h1>
+    <p class="mx-auto" style="max-width: 600px;">
+      "GroUp3 Workbench es la herramienta oficial de interfaz gráfica (GUI) para GroUp3. Te permite diseñar, crear y explorar esquemas de bases de datos, trabajar con objetos de base de datos, insertar datos, así como diseñar y ejecutar consultas SQL para gestionar datos almacenados. También puedes migrar esquemas y datos de otros proveedores de bases de datos a tu base de datos GroUp3."
+    </p>
+    <button class="btn btn-success mt-3" (click)="mostrarConnections = true">Empecemos!</button>
+  </div>
 
-      <div class="mb-3">
-        <label for="usuario" class="form-label">Usuario</label>
-        <input type="text"
-               id="usuario"
-               name="usuario"
-               class="form-control"
-               [(ngModel)]="usuario"
-               required>
-      </div>
+  <!-- Lista de usuarios -->
+  <div class="card p-4 shadow-lg" style="width: 350px;" *ngIf="mostrarConnections && !mostrarRegistro && !mostrarPasswordForm">
+    <h3 class="text-center mb-4">My Connections</h3>
+    <ul class="list-group mb-3">
+      <li 
+        class="list-group-item list-group-item-action text-center"
+        style="cursor:pointer;"
+        *ngFor="let user of usuarios"
+        (click)="seleccionarUsuario(user)">
+        {{ user }}
+      </li>
+    </ul>
+    <div class="d-flex justify-content-between">
+      <button class="btn btn-success" (click)="mostrarRegistro = true">Agregar Usuario</button>
+      <button class="btn btn-secondary" (click)="mostrarConnections = false">Cancelar</button>
+    </div>
+  </div>
 
+  <!-- Formulario de contraseña para el usuario seleccionado -->
+  <div class="card p-4 shadow-lg" style="width: 350px;" *ngIf="mostrarPasswordForm">
+    <h3 class="text-center mb-4">Acceso: {{ usuarioSeleccionado }}</h3>
+    <form (ngSubmit)="loginConPassword()" #passwordForm="ngForm">
       <div class="mb-3">
         <label for="password" class="form-label">Contraseña</label>
         <input type="password"
@@ -22,14 +42,15 @@
                [(ngModel)]="password"
                required>
       </div>
-
-      <button type="submit" class="btn btn-primary de-grid">Ingresar</button>
-      <div class="text-right mt-3">
-        <a (click)="llamarForm()" class="btn btn-secondary">Crear usuario</a>
+      <div class="d-flex justify-content-between">
+        <button type="submit" class="btn btn-primary" [disabled]="!passwordForm.form.valid">Acceder</button>
+        <button type="button" class="btn btn-secondary" (click)="cancelarPasswordForm()">Cancelar</button>
       </div>
+      <div *ngIf="mensajeError" class="alert alert-danger w-100 text-center mt-3">{{ mensajeError }}</div>
     </form>
   </div>
 
+  <!-- Formulario de registro de usuario -->
   <div class="card p-4 shadow-lg" style="width: 350px;" *ngIf="mostrarRegistro">
     <h3 class="text-center mb-4">Registro de usuario</h3>
     <form (ngSubmit)="registrarUsuario()" #registroForm="ngForm">
@@ -48,3 +69,22 @@
     </form>
   </div>
 </div>
+
+<style>
+  .d-flex.justify-content-center.align-items-center.vh-100.bg-light {
+    background-image: url('https://p4.wallpaperbetter.com/wallpaper/1003/652/895/white-line-abstraction-grey-wallpaper-preview.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+  }
+  .welcome-overlay {
+    background: rgba(255,255,255,0.65); /* Más transparente */
+    border-radius: 20px;
+    padding: 2.5rem 2rem 2rem 2rem;
+    box-shadow: 0 0 30px 0 rgba(0,0,0,0.15);
+    max-width: 600px;
+    margin: auto;
+    text-align: center;
+  }
+</style>
