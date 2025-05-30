@@ -5,15 +5,43 @@
       class="col-md-3 bg-dark text-white p-3 rounded-0 d-flex flex-column justify-content-start position-relative"
       style="min-height: 100vh"
     >
-      <h2 class="text-center">Admin DB</h2>
+      <h2 class="text-center">Welcome {{ usuarioActual }}</h2>
       <a href="#" class="d-block text-white py-2">Salir</a>
-      <button type="button" class="d-block text-white py-2 btn btn-link" style="text-align:left;" (click)="abrirPermisos()">Permisos</button>
-      <button type="button" class="d-block text-white py-2 btn btn-link" style="text-align:left;" (click)="abrirListarPermisos()">Listar Permisos</button>
+      <!-- SOLO root puede ver estos botones -->
+      <button 
+        *ngIf="esRoot"
+        type="button" 
+        class="d-block text-white py-2 btn btn-link" 
+        style="text-align:left;" 
+        (click)="abrirPermisos()"
+      >
+        Permisos
+      </button>
+      <button 
+        *ngIf="esRoot"
+        type="button" 
+        class="d-block text-white py-2 btn btn-link" 
+        style="text-align:left;" 
+        (click)="abrirListarPermisos()"
+      >
+        Listar Permisos
+      </button>
 
-      <!-- Card de gestión de permisos -->
+      <!-- Botón solo para usuarios que NO son root -->
+      <button 
+        *ngIf="!esRoot"
+        type="button" 
+        class="d-block text-white py-2 btn btn-link" 
+        style="text-align:left;" 
+        (click)="abrirMisPermisos()"
+      >
+        Mis Permisos
+      </button>
+
+      <!-- Card de gestión de permisos SOLO root -->
       <div
         class="card card-permisos p-3 shadow"
-        *ngIf="mostrarPermisos"
+        *ngIf="esRoot && mostrarPermisos"
         style="border-radius: 15px; border: none;"
       >
         <h5 class="mb-3 text-center">Gestión de Permisos</h5>
@@ -54,10 +82,10 @@
         </div>
       </div>
 
-      <!-- Card para listar permisos de un usuario y base de datos -->
+      <!-- Card para listar permisos SOLO root -->
       <div
         class="card card-permisos p-3 shadow"
-        *ngIf="mostrarListarPermisos"
+        *ngIf="esRoot && mostrarListarPermisos"
         style="border-radius: 15px; border: none;"
       >
         <h5 class="mb-3 text-center">Permisos del Usuario</h5>
@@ -86,6 +114,34 @@
         </div>
         <div class="d-flex justify-content-end">
           <button class="btn btn-secondary btn-sm" (click)="cerrarListarPermisos()">Cerrar</button>
+        </div>
+      </div>
+
+      <!-- Card para ver "Mis Permisos" SOLO para no-root -->
+      <div
+        class="card card-permisos p-3 shadow"
+        *ngIf="!esRoot && mostrarMisPermisos"
+        style="border-radius: 15px; border: none;"
+      >
+        <h5 class="mb-3 text-center">Mis Permisos</h5>
+        <div class="mb-3">
+          <label class="form-label">Base de datos</label>
+          <select class="form-select" [(ngModel)]="baseMisPermisosSeleccionada" (change)="listarMisPermisos()">
+            <option value="">-- Selecciona una base --</option>
+            <option *ngFor="let bd of basesDeDatos" [value]="bd">{{ bd }}</option>
+          </select>
+        </div>
+        <div *ngIf="misPermisosListados.length > 0">
+          <h6 class="mt-2 mb-1">Permisos:</h6>
+          <ul class="mb-0 ps-3">
+            <li *ngFor="let p of misPermisosListados">{{ p }}</li>
+          </ul>
+        </div>
+        <div *ngIf="misPermisosListados.length === 0 && baseMisPermisosSeleccionada" class="alert alert-warning py-1 px-2">
+          No tienes permisos sobre esta base de datos o no se pudo obtener la información.
+        </div>
+        <div class="d-flex justify-content-end">
+          <button class="btn btn-secondary btn-sm" (click)="cerrarMisPermisos()">Cerrar</button>
         </div>
       </div>
     </nav>

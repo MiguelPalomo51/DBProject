@@ -23,7 +23,7 @@ export class MenuprincipalComponent implements OnInit {
     'SELECT', 'INSERT', 'UPDATE', 'DELETE', 'ALL PRIVILEGES'
   ];
   permisoSeleccionado: string = '';
-  permisosUsuario: any[] = [];
+  permisosUsuario: string[] = [];
   mensajePermisos: string = '';
 
   mostrarListarPermisos = false;
@@ -34,12 +34,18 @@ export class MenuprincipalComponent implements OnInit {
   usuarioActual: string = '';
   passwordActual: string = '';
 
+  esRoot = false;
+  mostrarMisPermisos = false;
+  baseMisPermisosSeleccionada: string = '';
+  misPermisosListados: string[] = [];
+
   constructor(private http: HttpClient) {}
 
   ngOnInit(): void {
     this.cargarBasesDeDatos();
     this.usuarioActual = localStorage.getItem('usuario') || '';
     this.passwordActual = localStorage.getItem('password') || '';
+    this.esRoot = this.usuarioActual === 'root';
   }
 
   cargarBasesDeDatos(): void {
@@ -78,14 +84,14 @@ export class MenuprincipalComponent implements OnInit {
           this.resultadoConsulta = data;
           this.mensajeExito = 'Consulta ejecutada correctamente.';
           this.mensajeError = '';
-          setTimeout(() => this.mensajeExito = '', 6000);
+          setTimeout(() => this.mensajeExito = '', 3000);
         },
         error => {
           console.error('Error al ejecutar la consulta:', error);
           this.resultadoConsulta = [];
           this.mensajeError = error.error ? error.error : 'Error desconocido al ejecutar la consulta.';
           this.mensajeExito = '';
-          setTimeout(() => this.mensajeError = '', 2000);
+          setTimeout(() => this.mensajeError = '', 4000);
         }
       );
   }
@@ -112,33 +118,33 @@ export class MenuprincipalComponent implements OnInit {
   }
 
   consultarPermisos() {
-    // Limpia el mensaje antes de cualquier acción
     this.mensajePermisos = '';
-
-    // Solo consulta si ambos están seleccionados
-    if (!this.usuarioSeleccionado || !this.baseSeleccionada) {
-      this.permisosUsuario = [];
-      return;
-    }
-
-    this.http.get<any[]>(
-      `http://localhost:9090/mysql/permisos?usuario=${this.usuarioSeleccionado}&base=${this.baseSeleccionada}`
-    ).subscribe({
-      next: data => {
-        this.permisosUsuario = data;
-        this.mensajePermisos = '';
-      },
-      error: () => {
-        this.permisosUsuario = [];
-        this.mensajePermisos = 'No se pudieron obtener los permisos.';
-      }
-    });
+    this.permisosUsuario = [];
+    if (!this.usuarioSeleccionado || !this.baseSeleccionada) return;
+    this.http.get<string[]>(`http://localhost:9090/mysql/permisos?usuario=${this.usuarioSeleccionado}&base=${this.baseSeleccionada}`)
+      .subscribe({
+        next: data => this.permisosUsuario = data,
+        error: () => this.mensajePermisos = 'No se pudieron obtener los permisos.'
+      });
   }
 
   otorgarPermiso() {
-    // Aquí deberías implementar el endpoint para otorgar permisos en tu backend
-    this.mensajePermisos = `Permiso "${this.permisoSeleccionado}" otorgado a "${this.usuarioSeleccionado}" (simulado)`;
-    // Llama a tu backend real aquí si lo tienes implementado
+    if (!this.usuarioSeleccionado || !this.baseSeleccionada || !this.permisoSeleccionado) return;
+    const payload = {
+      usuario: this.usuarioSeleccionado,
+      base: this.baseSeleccionada,
+      permiso: this.permisoSeleccionado
+    };
+    this.http.post<{mensaje: string}>('http://localhost:9090/mysql/otorgarPermiso', payload)
+      .subscribe({
+        next: (resp) => {
+          this.mensajePermisos = resp.mensaje || 'Permisos otorgados exitosamente.';
+          this.consultarPermisos();
+        },
+        error: (error) => {
+          this.mensajePermisos = error.error?.error || 'No se pudo otorgar el permiso.';
+        }
+      });
   }
 
   abrirListarPermisos() {
@@ -160,6 +166,26 @@ export class MenuprincipalComponent implements OnInit {
       .subscribe({
         next: data => this.permisosListados = data,
         error: () => this.permisosListados = []
+      });
+  }
+
+  abrirMisPermisos() {
+    this.mostrarMisPermisos = true;
+    this.baseMisPermisosSeleccionada = '';
+    this.misPermisosListados = [];
+  }
+
+  cerrarMisPermisos() {
+    this.mostrarMisPermisos = false;
+  }
+
+  listarMisPermisos() {
+    this.misPermisosListados = [];
+    if (!this.baseMisPermisosSeleccionada) return;
+    this.http.get<string[]>(`http://localhost:9090/mysql/permisos?usuario=${this.usuarioActual}&base=${this.baseMisPermisosSeleccionada}`)
+      .subscribe({
+        next: data => this.misPermisosListados = data,
+        error: () => this.misPermisosListados = []
       });
   }
 }

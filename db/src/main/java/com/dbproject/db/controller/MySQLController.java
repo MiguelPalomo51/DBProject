@@ -1,5 +1,6 @@
 package com.dbproject.db.controller;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -71,11 +72,28 @@ public class MySQLController {
         return "Usuario'" + usuario + "'creado exitosamente";
     }
 
-    @PostMapping("/permisos")
-    public String otorgarPermisos(@RequestParam String usuario, @RequestParam String database) {
-        mySQLService.otorgarPermisos(usuario, database);
-        return "Permisos otorgados '" + database;
+    // Listar permisos de un usuario sobre una base
+    @GetMapping("/permisos")
+    public List<String> listarPermisos(
+            @RequestParam String usuario,
+            @RequestParam String base
+    ) {
+        return mySQLService.listarPermisos(usuario, base);
     }
+
+    @PostMapping("/otorgarPermiso")
+    public ResponseEntity<?> otorgarPermiso(@RequestBody Map<String, String> body) {
+    try {
+        String usuario = body.get("usuario");
+        String base = body.get("base");
+        String permiso = body.get("permiso");
+        mySQLService.otorgarPermiso(usuario, base, permiso);
+        return ResponseEntity.ok(Collections.singletonMap("mensaje", "Permiso otorgado correctamente."));
+    } catch (Exception e) {
+        return ResponseEntity.status(500).body(Collections.singletonMap("error", "Error al otorgar permiso: " + e.getMessage()));
+    }
+}
+
 
     @PostMapping("/ejecutar")
     public ResponseEntity<?> ejecutarConsulta(@RequestBody Map<String, String> body) {
@@ -114,7 +132,7 @@ public class MySQLController {
         String msg = e.getMessage() != null ? e.getMessage().toLowerCase() : "";
         if (msg.contains("access denied") || msg.contains("failed to obtain jdbc connection")) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                .body("Error 2005: El usuario no tiene permisos sobre la base de datos o la consulta.");
+                .body("Error 2005: Permisos insuficientes. Asegúrese de que el usuario tenga los permisos necesarios para ejecutar la consulta.");
         }
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
     }
