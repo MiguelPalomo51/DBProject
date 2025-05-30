@@ -76,6 +76,14 @@
           <ul class="mb-0 ps-3">
             <li *ngFor="let permiso of parsearPermisos(permisosUsuario)">
               Puedes: <b>{{ permiso.acciones.join(', ') }}</b> en la base de datos <b>{{ permiso.base }}</b>
+              <button
+                *ngFor="let accion of permiso.acciones"
+                class="btn btn-danger btn-sm ms-2"
+                (click)="removerPermiso(accion, permiso.base)"
+                style="padding: 0.1rem 0.5rem; font-size: 0.95em;"
+              >
+                Remover {{ accion }}
+              </button>
             </li>
           </ul>
         </div>

@@ -91,6 +91,18 @@ public class MySQLController {
     }
 }
 
+@PostMapping("/removerPermiso")
+public ResponseEntity<?> removerPermiso(@RequestBody Map<String, String> body) {
+    try {
+        String usuario = body.get("usuario");
+        String base = body.get("base");
+        String permiso = body.get("permiso");
+        mySQLService.removerPermiso(usuario, base, permiso);
+        return ResponseEntity.ok(Collections.singletonMap("mensaje", "Permiso removido correctamente."));
+    } catch (Exception e) {
+        return ResponseEntity.status(500).body(Collections.singletonMap("error", "Error al remover permiso: " + e.getMessage()));
+    }
+}
 
     @PostMapping("/ejecutar")
     public ResponseEntity<?> ejecutarConsulta(@RequestBody Map<String, String> body) {

@@ -154,6 +154,20 @@ public class MySQLService {
         jdbcTemplate.execute(sql);
     }
 
+    // Remover permiso a un usuario sobre una base
+    public void removerPermiso(String usuario, String base, String permiso) {
+        String sql = "REVOKE " + permiso + " ON " + base + ".* FROM '" + usuario + "'@'%'";
+        DataSource dataSource = DataSourceBuilder.create()
+                .url("jdbc:mysql://localhost:3306/" + base + "?serverTimezone=UTC")
+                .username("root") // O el usuario administrador
+                .password("123456") // Cambia por tu contraseña real
+                .driverClassName("com.mysql.cj.jdbc.Driver")
+                .build();
+
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+        jdbcTemplate.execute(sql);
+    }
+
     // Listar todas las bases de datos
     public List<String> listarBases() {
         DataSource dataSource = DataSourceBuilder.create()

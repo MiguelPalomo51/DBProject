@@ -211,6 +211,25 @@ export class MenuprincipalComponent implements OnInit {
     });
     return resultado;
   }
+
+  removerPermiso(permiso: string, base: string) {
+    if (!this.usuarioSeleccionado || !base || !permiso) return;
+    const payload = {
+      usuario: this.usuarioSeleccionado,
+      base: base,
+      permiso: permiso
+    };
+    this.http.post<{mensaje: string}>('http://localhost:9090/mysql/removerPermiso', payload)
+      .subscribe({
+        next: resp => {
+          this.mensajePermisos = resp.mensaje || 'Permiso removido correctamente.';
+          this.consultarPermisos(); // Refresca la lista de permisos
+        },
+        error: err => {
+          this.mensajePermisos = err.error?.error || 'No se pudo remover el permiso.';
+        }
+      });
+  }
 }
 
 @Injectable({ providedIn: 'root' })
