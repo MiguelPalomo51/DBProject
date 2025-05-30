@@ -108,5 +108,31 @@ package com.dbproject.db.service;
             return permisos;
         }
         
+        public List<Map<String, Object>> ejecutarConsulta(String usuario, String password, String base, String consulta) {
+            // Imprimir en consola los datos recibidos
+            System.out.println("Usuario recibido: " + usuario);
+            System.out.println("Password recibido: " + password);
+            System.out.println("Base de datos recibida: " + base);
+            System.out.println("Consulta recibida: " + consulta);
 
+            String url = "jdbc:mysql://localhost:3306/" + base + "?serverTimezone=UTC";
+            DataSource dataSource = DataSourceBuilder.create()
+                    .url(url)
+                    .username(usuario)
+                    .password(password)
+                    .driverClassName("com.mysql.cj.jdbc.Driver")
+                    .build();
+
+            JdbcTemplate template = new JdbcTemplate(dataSource);
+
+            if (consulta.trim().toLowerCase().startsWith("select") || consulta.trim().toLowerCase().startsWith("show")) {
+                return template.queryForList(consulta);
+            } else {
+                int affectedRows = template.update(consulta);
+                Map<String, Object> result = Map.of("Lineas afectadas", affectedRows);
+                List<Map<String, Object>> response = new ArrayList<>();
+                response.add(result);
+                return response;
+            }
+        }
     }

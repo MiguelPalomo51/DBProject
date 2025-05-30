@@ -28,12 +28,18 @@ export class MenuprincipalComponent implements OnInit {
 
   mostrarListarPermisos = false;
   usuarioListarSeleccionado: string = '';
+  baseListarSeleccionada: string = '';
   permisosListados: string[] = [];
+
+  usuarioActual: string = '';
+  passwordActual: string = '';
 
   constructor(private http: HttpClient) {}
 
   ngOnInit(): void {
     this.cargarBasesDeDatos();
+    this.usuarioActual = localStorage.getItem('usuario') || '';
+    this.passwordActual = localStorage.getItem('password') || '';
   }
 
   cargarBasesDeDatos(): void {
@@ -54,29 +60,34 @@ export class MenuprincipalComponent implements OnInit {
   }
 
   ejecutarConsulta(): void {
+    console.log('Usuario:', this.usuarioActual);
+    console.log('Password:', this.passwordActual);
+    console.log('Base:', this.baseSeleccionada);
+    console.log('Consulta:', this.consultaSQL);
+
     const payload = {
+      usuario: this.usuarioActual,
+      password: this.passwordActual,
       base: this.baseSeleccionada,
       consulta: this.consultaSQL
     };
 
     this.http.post<any[]>('http://localhost:9090/mysql/ejecutar', payload)
-    .subscribe(
-      data => {
-        this.resultadoConsulta = data;
-        this.mensajeExito = 'Consulta ejecutada correctamente.';
-        
-        this.mensajeError = '';
-        setTimeout(() => this.mensajeExito = '', 6000); // Oculta el mensaje de éxito después de 6 segundos
-      },
-      error => {
-        console.error('Error al ejecutar la consulta:', error);
-        this.resultadoConsulta = [];
-        this.mensajeError = error.error ? error.error : 'Error desconocido al ejecutar la consulta.';
-        this.mensajeExito = '';
-        setTimeout(() => this.mensajeError = '', 2000);
-      }
-    );
-
+      .subscribe(
+        data => {
+          this.resultadoConsulta = data;
+          this.mensajeExito = 'Consulta ejecutada correctamente.';
+          this.mensajeError = '';
+          setTimeout(() => this.mensajeExito = '', 6000);
+        },
+        error => {
+          console.error('Error al ejecutar la consulta:', error);
+          this.resultadoConsulta = [];
+          this.mensajeError = error.error ? error.error : 'Error desconocido al ejecutar la consulta.';
+          this.mensajeExito = '';
+          setTimeout(() => this.mensajeError = '', 2000);
+        }
+      );
   }
 
   // Llama esto en ngOnInit o cuando abras la card de permisos
@@ -143,9 +154,9 @@ export class MenuprincipalComponent implements OnInit {
 
   listarPermisosUsuario() {
     this.permisosListados = [];
-    if (!this.usuarioListarSeleccionado) return;
-    // Si tu backend requiere baseDeDatos, puedes poner "*" o pedir otro combo
-    this.http.get<string[]>(`http://localhost:9090/mysql/permisos?usuario=${this.usuarioListarSeleccionado}&base=*`)
+    if (!this.usuarioListarSeleccionado || !this.baseListarSeleccionada) return;
+    // Usa la ruta correcta según tu backend
+    this.http.get<string[]>(`http://localhost:9090/Aut/permisos?usuario=${this.usuarioListarSeleccionado}&base=${this.baseListarSeleccionada}`)
       .subscribe({
         next: data => this.permisosListados = data,
         error: () => this.permisosListados = []

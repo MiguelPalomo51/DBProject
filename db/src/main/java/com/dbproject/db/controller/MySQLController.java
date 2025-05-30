@@ -78,29 +78,44 @@ public class MySQLController {
     }
 
     @PostMapping("/ejecutar")
-public ResponseEntity<?> ejecutarConsulta(@RequestBody Map<String, String> body) {
+    public ResponseEntity<?> ejecutarConsulta(@RequestBody Map<String, String> body) {
     try {
+        String usuario = body.get("usuario");
+        String password = body.get("password");
         String base = body.get("base");
         String consulta = body.get("consulta");
 
-        // manejo de errores si no hay resultados
+        // Mostrar en consola los datos recibidos
+        System.out.println("Usuario recibido: " + usuario);
+        System.out.println("Password recibido: " + password);
+        System.out.println("Base de datos recibida: " + base);
+
+        // Validaciones
+        if (usuario == null || usuario.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error 2003: No hay usuario especificado.");
+        }
+        if (password == null || password.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error 2004: No hay contraseña especificada.");
+        }
         if (base == null || base.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error 2000: No hay base de datos especificada.");
         }
-
         if (consulta == null || consulta.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error 2001: No hay consulta SQL especificada.");
         }
 
+        List<Map<String, Object>> resultado = mySQLService.ejecutarConsulta(usuario, password, base, consulta);
 
-        List<Map<String, Object>> resultado = mySQLService.ejecutarConsulta(base, consulta);
-        
-        // manejo de errores si no hay resultados
         if (resultado == null || resultado.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error 2002: No se encontraron resultados para la consulta.");
         }
         return ResponseEntity.ok(resultado);
     } catch (Exception e) {
+        String msg = e.getMessage() != null ? e.getMessage().toLowerCase() : "";
+        if (msg.contains("access denied") || msg.contains("failed to obtain jdbc connection")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body("Error 2005: El usuario no tiene permisos sobre la base de datos o la consulta.");
+        }
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
     }
 }

@@ -22,6 +22,9 @@ export class LoginComponent {
   usuarioRegistro: string = '';
   passwordRegistro: string = '';
 
+  usuarioActual: string = '';
+  passwordActual: string = '';
+
   constructor(private http: HttpClient, private router: Router) {
     this.cargarUsuarios();
   }
@@ -58,6 +61,8 @@ export class LoginComponent {
     this.http.post('http://localhost:9090/Aut/login', null, { params }).subscribe(
       (response: any) => {
         if (response.estado) {
+          localStorage.setItem('usuario', this.usuarioSeleccionado!);
+          localStorage.setItem('password', this.password);
           this.router.navigate(['/menuprincipal']);
         } else {
           this.mensajeError = response.mensaje;
