@@ -72,13 +72,10 @@ public class MySQLController {
         return "Usuario'" + usuario + "'creado exitosamente";
     }
 
-    // Listar permisos de un usuario sobre una base
+    // Listar todos los permisos de un usuario
     @GetMapping("/permisos")
-    public List<String> listarPermisos(
-            @RequestParam String usuario,
-            @RequestParam String base
-    ) {
-        return mySQLService.listarPermisos(usuario, base);
+    public List<String> listarPermisos(@RequestParam String usuario) {
+        return mySQLService.listarPermisos(usuario);
     }
 
     @PostMapping("/otorgarPermiso")

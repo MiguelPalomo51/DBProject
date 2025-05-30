@@ -119,10 +119,10 @@ public class MySQLService {
         }
     }
 
-    public List<String> listarPermisos(String usuario, String baseDeDatos) {
+    public List<String> listarPermisos(String usuario) {
     String sql = "SHOW GRANTS FOR '" + usuario + "'@'%'";
     DataSource dataSource = DataSourceBuilder.create()
-            .url("jdbc:mysql://localhost:3306/" + baseDeDatos + "?serverTimezone=UTC")
+            .url("jdbc:mysql://localhost:3306/?serverTimezone=UTC")
             .username("root")
             .password("123456")
             .driverClassName("com.mysql.cj.jdbc.Driver")

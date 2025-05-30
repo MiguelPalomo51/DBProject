@@ -171,8 +171,8 @@ export class MenuprincipalComponent implements OnInit {
 
   abrirMisPermisos() {
     this.mostrarMisPermisos = true;
-    // Trae todos los permisos del usuario actual (sin filtrar por base)
-    this.http.get<string[]>(`http://localhost:9090/mysql/permisos?usuario=${this.usuarioActual}&base=*`)
+    this.misPermisosListados = [];
+    this.http.get<string[]>(`http://localhost:9090/mysql/permisos?usuario=${this.usuarioActual}`)
       .subscribe({
         next: data => {
           this.misPermisosListados = data;
@@ -200,12 +200,10 @@ export class MenuprincipalComponent implements OnInit {
   parsearPermisos(permisos: string[]): { base: string, acciones: string[] }[] {
     const resultado: { base: string, acciones: string[] }[] = [];
     permisos.forEach(linea => {
-      // Coincide con: GRANT ACCIONES ON `base`.* TO ...
       const match = linea.match(/^GRANT (.+) ON [`]?([a-zA-Z0-9_]+)[`]?.\* TO/i);
       if (match) {
         const acciones = match[1].split(',').map(a => a.trim());
         const base = match[2];
-        // Ignora solo USAGE
         if (acciones.length === 1 && acciones[0].toUpperCase() === 'USAGE') return;
         resultado.push({ base, acciones });
       }
