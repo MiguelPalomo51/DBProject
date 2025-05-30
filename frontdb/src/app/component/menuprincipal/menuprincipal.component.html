@@ -74,7 +74,9 @@
         <div *ngIf="permisosUsuario.length > 0">
           <h6 class="mt-2 mb-1">Permisos actuales:</h6>
           <ul class="mb-0 ps-3">
-            <li *ngFor="let p of permisosUsuario">{{ p }}</li>
+            <li *ngFor="let permiso of parsearPermisos(permisosUsuario)">
+              Puedes: <b>{{ permiso.acciones.join(', ') }}</b> en la base de datos <b>{{ permiso.base }}</b>
+            </li>
           </ul>
         </div>
         <div *ngIf="permisosUsuario.length === 0 && usuarioSeleccionado && baseSeleccionada && !mensajePermisos" class="alert alert-warning py-1 px-2">
@@ -134,7 +136,9 @@
         <div *ngIf="misPermisosListados.length > 0">
           <h6 class="mt-2 mb-1">Permisos:</h6>
           <ul class="mb-0 ps-3">
-            <li *ngFor="let p of misPermisosListados">{{ p }}</li>
+            <li *ngFor="let permiso of parsearPermisos(misPermisosListados)">
+              Puedes: <b>{{ permiso.acciones.join(', ') }}</b> en la base de datos <b>{{ permiso.base }}</b>
+            </li>
           </ul>
         </div>
         <div *ngIf="misPermisosListados.length === 0 && baseMisPermisosSeleccionada" class="alert alert-warning py-1 px-2">

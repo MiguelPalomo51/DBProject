@@ -134,16 +134,7 @@ public class MySQLService {
 
     for (Map<String, Object> grant : grants) {
         for (Object valor : grant.values()) {
-            String permiso = valor.toString();
-            // Incluye permisos globales, sobre la base, o sobre tablas de la base
-            if (
-                permiso.contains(baseDeDatos + ".*") ||
-                permiso.contains(baseDeDatos + ".") ||
-                permiso.contains("*.*") ||
-                permiso.contains("USAGE")
-            ) {
-                permisos.add(permiso);
-            }
+            permisos.add(valor.toString());
         }
     }
     return permisos;
