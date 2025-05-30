@@ -160,11 +160,12 @@ export class MenuprincipalComponent implements OnInit {
 
   listarPermisosUsuario() {
     this.permisosListados = [];
-    if (!this.usuarioListarSeleccionado || !this.baseListarSeleccionada) return;
-    // Usa la ruta correcta según tu backend
-    this.http.get<string[]>(`http://localhost:9090/Aut/permisos?usuario=${this.usuarioListarSeleccionado}&base=${this.baseListarSeleccionada}`)
+    if (!this.usuarioListarSeleccionado) return;
+    this.http.get<string[]>(`http://localhost:9090/mysql/permisos?usuario=${this.usuarioListarSeleccionado}`)
       .subscribe({
-        next: data => this.permisosListados = data,
+        next: data => {
+          this.permisosListados = data;
+        },
         error: () => this.permisosListados = []
       });
   }
